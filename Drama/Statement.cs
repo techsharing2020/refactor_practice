@@ -18,9 +18,13 @@ namespace Drama
                 detail.Play     = playDic[p.PlayID];
                 detail.PlayID   = p.PlayID;
                 detail.Audience = p.Audience;
+                detail.Amount   = CalculateAmount(detail);
+                detail.Credits  = CalculateCredits(detail);
 
                 return detail;
-            });
+            }).ToList();
+            data.TotalAmount   = data.PerformanceDetails.Sum(d => d.Amount);
+            data.VolumeCredits = data.PerformanceDetails.Sum(d => d.Credits);
 
             return RenderPlainText(data);
         }
@@ -29,29 +33,16 @@ namespace Drama
         {
             var result = $"Statement for {data.Customer}\n";
 
-            var volumeCredits = CalculateVolumeCredits(data.PerformanceDetails);
-            var totalAmount   = CalculateTotalAmount(data.PerformanceDetails);
-
             foreach (var detail in data.PerformanceDetails)
             {
                 result +=
-                    $" {detail.Play.Name}: {(CalculateAmount(detail) / 100).ToString("C2", new CultureInfo("en-US"))} ({detail.Audience} seats)\n";
+                    $" {detail.Play.Name}: {(detail.Amount / 100).ToString("C2", new CultureInfo("en-US"))} ({detail.Audience} seats)\n";
             }
 
-            result += $"Amount owed is {(totalAmount / 100).ToString("C2", new CultureInfo("en-US"))}\n";
-            result += $"You earned {volumeCredits} credits!\n";
+            result += $"Amount owed is {(data.TotalAmount / 100).ToString("C2", new CultureInfo("en-US"))}\n";
+            result += $"You earned {data.VolumeCredits} credits!\n";
 
             return result;
-        }
-
-        private static decimal CalculateTotalAmount(IEnumerable<PerformanceDetail> details)
-        {
-            return details.Sum(CalculateAmount);
-        }
-
-        private static decimal CalculateVolumeCredits(IEnumerable<PerformanceDetail> details)
-        {
-            return details.Sum(CalculateCredits);
         }
 
         private static decimal CalculateCredits(PerformanceDetail detail)
