@@ -9,6 +9,11 @@ namespace Drama
     {
         public string GetResult(Invoice invoice, Dictionary<string, Play> playDic)
         {
+            return RenderPlainText(invoice, playDic);
+        }
+
+        private static string RenderPlainText(Invoice invoice, Dictionary<string, Play> playDic)
+        {
             var result = $"Statement for {invoice.Customer}\n";
 
             var volumeCredits = CalCulateVolumeCredits(invoice, playDic);
