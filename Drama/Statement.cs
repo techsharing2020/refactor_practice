@@ -9,10 +9,12 @@ namespace Drama
     {
         public string GetResult(Invoice invoice, Dictionary<string, Play> playDic)
         {
-            return RenderPlainText(invoice, playDic);
+            var data = new StatementData();
+
+            return RenderPlainText(invoice, playDic, data);
         }
 
-        private static string RenderPlainText(Invoice invoice, Dictionary<string, Play> playDic)
+        private static string RenderPlainText(Invoice invoice, Dictionary<string, Play> playDic, StatementData data)
         {
             var result = $"Statement for {invoice.Customer}\n";
 
