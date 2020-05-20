@@ -9,29 +9,36 @@ namespace Drama
     {
         public string GetResult(Invoice invoice, Dictionary<string, Play> playDic)
         {
-            var totalAmount = 0m;
+            var totalAmount   = 0m;
             var volumeCredits = 0m;
-            var result = $"Statement for { invoice.Customer}\n";
+            var result        = $"Statement for {invoice.Customer}\n";
 
             foreach (var perf in invoice.Performances)
             {
-                var play = playDic[perf.PlayID];
+                var play       = playDic[perf.PlayID];
                 var thisAmount = CalculateAmount(play, perf);
+                volumeCredits += CalculateCredits(perf, play);
 
-                volumeCredits += Math.Max(perf.Audience - 30, 0);
-                if (play.Type == PlayType.Comedy)
-                {
-                    volumeCredits += Math.Floor(perf.Audience / 5m);
-                }
-
-                result += $" { play.Name}: { (thisAmount / 100).ToString("C2", new CultureInfo("en-US"))} ({ perf.Audience} seats)\n";
+                result +=
+                    $" {play.Name}: {(thisAmount / 100).ToString("C2", new CultureInfo("en-US"))} ({perf.Audience} seats)\n";
                 totalAmount += thisAmount;
             }
 
-            result += $"Amount owed is { (totalAmount / 100).ToString("C2", new CultureInfo("en-US"))}\n";
-            result += $"You earned { volumeCredits} credits!\n";
+            result += $"Amount owed is {(totalAmount / 100).ToString("C2", new CultureInfo("en-US"))}\n";
+            result += $"You earned {volumeCredits} credits!\n";
 
             return result;
+        }
+
+        private static decimal CalculateCredits(Performance perf, Play play)
+        {
+            var credits = Math.Max(perf.Audience - 30, 0m);
+            if (play.Type == PlayType.Comedy)
+            {
+                credits += Math.Floor(perf.Audience / 5m);
+            }
+
+            return credits;
         }
 
         private static decimal CalculateAmount(Play play, Performance perf)
