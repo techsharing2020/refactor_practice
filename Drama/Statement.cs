@@ -15,13 +15,12 @@ namespace Drama
 
             foreach (var perf in invoice.Performances)
             {
-                var play       = playDic[perf.PlayID];
-                var thisAmount = CalculateAmount(play, perf);
+                var play = playDic[perf.PlayID];
                 volumeCredits += CalculateCredits(perf, play);
 
                 result +=
-                    $" {play.Name}: {(thisAmount / 100).ToString("C2", new CultureInfo("en-US"))} ({perf.Audience} seats)\n";
-                totalAmount += thisAmount;
+                    $" {play.Name}: {(CalculateAmount(play, perf) / 100).ToString("C2", new CultureInfo("en-US"))} ({perf.Audience} seats)\n";
+                totalAmount += CalculateAmount(play, perf);
             }
 
             result += $"Amount owed is {(totalAmount / 100).ToString("C2", new CultureInfo("en-US"))}\n";
