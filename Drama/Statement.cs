@@ -29,7 +29,7 @@ namespace Drama
         {
             var result = $"Statement for {data.Customer}\n";
 
-            var volumeCredits = CalculateVolumeCredits(invoice, playDic);
+            var volumeCredits = CalculateVolumeCredits(data.PerformanceDetails);
             var totalAmount   = CalculateTotalAmount(data.PerformanceDetails);
 
             foreach (var detail in data.PerformanceDetails)
@@ -49,24 +49,17 @@ namespace Drama
             return details.Sum(CalculateAmount);
         }
 
-        private static decimal CalculateVolumeCredits(Invoice invoice, Dictionary<string, Play> playDic)
+        private static decimal CalculateVolumeCredits(IEnumerable<PerformanceDetail> details)
         {
-            var volumeCredits = 0m;
-            foreach (var perf in invoice.Performances)
-            {
-                var play = playDic[perf.PlayID];
-                volumeCredits += CalculateCredits(perf, play);
-            }
-
-            return volumeCredits;
+            return details.Sum(CalculateCredits);
         }
 
-        private static decimal CalculateCredits(Performance perf, Play play)
+        private static decimal CalculateCredits(PerformanceDetail detail)
         {
-            var credits = Math.Max(perf.Audience - 30, 0m);
-            if (play.Type == PlayType.Comedy)
+            var credits = Math.Max(detail.Audience - 30, 0m);
+            if (detail.Play.Type == PlayType.Comedy)
             {
-                credits += Math.Floor(perf.Audience / 5m);
+                credits += Math.Floor(detail.Audience / 5m);
             }
 
             return credits;
