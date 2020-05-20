@@ -9,24 +9,47 @@ namespace Drama
     {
         public string GetResult(Invoice invoice, Dictionary<string, Play> playDic)
         {
-            var totalAmount   = 0m;
-            var volumeCredits = 0m;
-            var result        = $"Statement for {invoice.Customer}\n";
+            var result = $"Statement for {invoice.Customer}\n";
+
+            var volumeCredits = CalCulateVolumeCredits(invoice, playDic);
+            var totalAmount   = CalculateTotalAmount(invoice, playDic);
 
             foreach (var perf in invoice.Performances)
             {
                 var play = playDic[perf.PlayID];
-                volumeCredits += CalculateCredits(perf, play);
 
                 result +=
                     $" {play.Name}: {(CalculateAmount(play, perf) / 100).ToString("C2", new CultureInfo("en-US"))} ({perf.Audience} seats)\n";
-                totalAmount += CalculateAmount(play, perf);
             }
 
             result += $"Amount owed is {(totalAmount / 100).ToString("C2", new CultureInfo("en-US"))}\n";
             result += $"You earned {volumeCredits} credits!\n";
 
             return result;
+        }
+
+        private static decimal CalculateTotalAmount(Invoice invoice, Dictionary<string, Play> playDic)
+        {
+            var totalAmount = 0m;
+            foreach (var perf in invoice.Performances)
+            {
+                var play = playDic[perf.PlayID];
+                totalAmount += CalculateAmount(play, perf);
+            }
+
+            return totalAmount;
+        }
+
+        private static decimal CalCulateVolumeCredits(Invoice invoice, Dictionary<string, Play> playDic)
+        {
+            var volumeCredits = 0m;
+            foreach (var perf in invoice.Performances)
+            {
+                var play = playDic[perf.PlayID];
+                volumeCredits += CalculateCredits(perf, play);
+            }
+
+            return volumeCredits;
         }
 
         private static decimal CalculateCredits(Performance perf, Play play)
