@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using Drama.Models;
 
 namespace Drama
@@ -10,23 +11,31 @@ namespace Drama
         public string GetResult(Invoice invoice, Dictionary<string, Play> playDic)
         {
             var data = new StatementData();
+            data.Customer = invoice.Customer;
+            data.PerformanceDetails = invoice.Performances.Select(p =>
+            {
+                var detail = new PerformanceDetail();
+                detail.Play     = playDic[p.PlayID];
+                detail.PlayID   = p.PlayID;
+                detail.Audience = p.Audience;
+
+                return detail;
+            });
 
             return RenderPlainText(invoice, playDic, data);
         }
 
         private static string RenderPlainText(Invoice invoice, Dictionary<string, Play> playDic, StatementData data)
         {
-            var result = $"Statement for {invoice.Customer}\n";
+            var result = $"Statement for {data.Customer}\n";
 
             var volumeCredits = CalCulateVolumeCredits(invoice, playDic);
             var totalAmount   = CalculateTotalAmount(invoice, playDic);
 
-            foreach (var perf in invoice.Performances)
+            foreach (var perf in data.PerformanceDetails)
             {
-                var play = playDic[perf.PlayID];
-
                 result +=
-                    $" {play.Name}: {(CalculateAmount(play, perf) / 100).ToString("C2", new CultureInfo("en-US"))} ({perf.Audience} seats)\n";
+                    $" {perf.Play.Name}: {(CalculateAmount(perf.Play, perf) / 100).ToString("C2", new CultureInfo("en-US"))} ({perf.Audience} seats)\n";
             }
 
             result += $"Amount owed is {(totalAmount / 100).ToString("C2", new CultureInfo("en-US"))}\n";
