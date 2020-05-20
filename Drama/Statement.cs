@@ -22,10 +22,10 @@ namespace Drama
                 return detail;
             });
 
-            return RenderPlainText(invoice, playDic, data);
+            return RenderPlainText(data);
         }
 
-        private static string RenderPlainText(Invoice invoice, Dictionary<string, Play> playDic, StatementData data)
+        private static string RenderPlainText(StatementData data)
         {
             var result = $"Statement for {data.Customer}\n";
 
