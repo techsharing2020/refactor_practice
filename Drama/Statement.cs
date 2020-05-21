@@ -56,17 +56,13 @@ namespace Drama
             return credits;
         }
 
-        private static decimal CalculateAmount(PerformanceDetail detail)
+        private decimal CalculateAmount(PerformanceDetail detail)
         {
             decimal result;
             switch (detail.Play.Type)
             {
                 case PlayType.Tragedy:
-                    result = 40000;
-                    if (detail.Audience > 30)
-                    {
-                        result += 1000 * (detail.Audience - 30);
-                    }
+                    result = new TragedyCalculator().GetAmount(detail.Audience);
 
                     break;
                 case PlayType.Comedy:
