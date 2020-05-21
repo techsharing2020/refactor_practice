@@ -1,8 +1,8 @@
 namespace Drama.Models
 {
-    public class TragedyCalculator
+    public class TragedyCalculator : PerformanceCalculator
     {
-        public decimal GetAmount(int audience)
+        public override decimal GetAmount(int audience)
         {
             decimal result = 40000;
             if (audience > 30)

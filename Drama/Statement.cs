@@ -66,13 +66,7 @@ namespace Drama
 
                     break;
                 case PlayType.Comedy:
-                    result = 30000;
-                    if (detail.Audience > 20)
-                    {
-                        result += 10000 + 500 * (detail.Audience - 20);
-                    }
-
-                    result += 300 * detail.Audience;
+                    result = new ComedyCalculator().GetAmount(detail.Audience);
                     break;
                 default:
                     throw new Exception($"unknown type: {detail.Play.Type}");
