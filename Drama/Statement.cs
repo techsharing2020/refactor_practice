@@ -8,6 +8,8 @@ namespace Drama
 {
     public class Statement
     {
+        private readonly CalculatorFactory _calculatorFactory = new CalculatorFactory();
+
         public string GetResult(Invoice invoice, Dictionary<string, Play> playDic)
         {
             var data = new StatementData();
@@ -18,7 +20,8 @@ namespace Drama
                 detail.Play     = playDic[p.PlayID];
                 detail.PlayID   = p.PlayID;
                 detail.Audience = p.Audience;
-                detail.Amount   = CalculateAmount(detail);
+                var calculator = _calculatorFactory.Get(detail.Play.Type);
+                detail.Amount = calculator.GetAmount(p.Audience);
                 detail.Credits  = CalculateCredits(detail);
 
                 return detail;
@@ -54,25 +57,6 @@ namespace Drama
             }
 
             return credits;
-        }
-
-        private decimal CalculateAmount(PerformanceDetail detail)
-        {
-            decimal result;
-            switch (detail.Play.Type)
-            {
-                case PlayType.Tragedy:
-                    result = new TragedyCalculator().GetAmount(detail.Audience);
-
-                    break;
-                case PlayType.Comedy:
-                    result = new ComedyCalculator().GetAmount(detail.Audience);
-                    break;
-                default:
-                    throw new Exception($"unknown type: {detail.Play.Type}");
-            }
-
-            return result;
         }
     }
 }
