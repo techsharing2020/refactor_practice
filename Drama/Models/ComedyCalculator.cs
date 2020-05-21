@@ -1,3 +1,5 @@
+using System;
+
 namespace Drama.Models
 {
     public class ComedyCalculator : PerformanceCalculator
@@ -12,6 +14,11 @@ namespace Drama.Models
 
             result += 300 * audience;
             return result;
+        }
+
+        public override decimal GetCredits(int audience)
+        {
+            return base.GetCredits(audience) + Math.Floor(audience / 5m);
         }
     }
 }

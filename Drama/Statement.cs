@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Drama.Models;
@@ -21,8 +20,8 @@ namespace Drama
                 detail.PlayID   = p.PlayID;
                 detail.Audience = p.Audience;
                 var calculator = _calculatorFactory.Get(detail.Play.Type);
-                detail.Amount = calculator.GetAmount(p.Audience);
-                detail.Credits  = CalculateCredits(detail);
+                detail.Amount  = calculator.GetAmount(p.Audience);
+                detail.Credits = calculator.GetCredits(p.Audience);
 
                 return detail;
             }).ToList();
@@ -46,17 +45,6 @@ namespace Drama
             result += $"You earned {data.VolumeCredits} credits!\n";
 
             return result;
-        }
-
-        private static decimal CalculateCredits(PerformanceDetail detail)
-        {
-            var credits = Math.Max(detail.Audience - 30, 0m);
-            if (detail.Play.Type == PlayType.Comedy)
-            {
-                credits += Math.Floor(detail.Audience / 5m);
-            }
-
-            return credits;
         }
     }
 }
