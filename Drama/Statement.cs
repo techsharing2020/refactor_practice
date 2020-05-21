@@ -5,9 +5,29 @@ using Drama.Models;
 
 namespace Drama
 {
+    public class PlainTextGenerator
+    {
+        public string Render(StatementData data)
+        {
+            var result = $"Statement for {data.Customer}\n";
+
+            foreach (var detail in data.PerformanceDetails)
+            {
+                result +=
+                    $" {detail.Play.Name}: {(detail.Amount / 100).ToString("C2", new CultureInfo("en-US"))} ({detail.Audience} seats)\n";
+            }
+
+            result += $"Amount owed is {(data.TotalAmount / 100).ToString("C2", new CultureInfo("en-US"))}\n";
+            result += $"You earned {data.VolumeCredits} credits!\n";
+
+            return result;
+        }
+    }
+
     public class Statement
     {
         private readonly CalculatorFactory _calculatorFactory = new CalculatorFactory();
+        private readonly PlainTextGenerator _plainTextGenerator = new PlainTextGenerator();
 
         public string GetResult(Invoice invoice, Dictionary<string, Play> playDic)
         {
@@ -28,23 +48,7 @@ namespace Drama
             data.TotalAmount   = data.PerformanceDetails.Sum(d => d.Amount);
             data.VolumeCredits = data.PerformanceDetails.Sum(d => d.Credits);
 
-            return RenderPlainText(data);
-        }
-
-        private static string RenderPlainText(StatementData data)
-        {
-            var result = $"Statement for {data.Customer}\n";
-
-            foreach (var detail in data.PerformanceDetails)
-            {
-                result +=
-                    $" {detail.Play.Name}: {(detail.Amount / 100).ToString("C2", new CultureInfo("en-US"))} ({detail.Audience} seats)\n";
-            }
-
-            result += $"Amount owed is {(data.TotalAmount / 100).ToString("C2", new CultureInfo("en-US"))}\n";
-            result += $"You earned {data.VolumeCredits} credits!\n";
-
-            return result;
+            return _plainTextGenerator.Render(data);
         }
     }
 }
